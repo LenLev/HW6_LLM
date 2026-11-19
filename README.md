@@ -1,38 +1,34 @@
-# ДЗ 6. Ускорение инференса
+# HW6: ускорение инференса
 
-Лучший результат при 120 RPM: EAGLE-3, средняя задержка 6,90 -> 4,89 с, ускорение 1,41 раза. Проверенный максимум по SLA: 200 RPM за 300 секунд, P90 14,72 с. При 210 RPM P90 уже 16,89 с.
+## Результаты
 
-Короткий отчет: `report.pdf` (2 страницы), редактируемая версия: `report.md`. Скрипты конфигураций: `configs/`. Таблицы: `tables/configurations.csv`, `tables/speculation.csv`, `tables/load_test.csv`. Все 16 замеров с исходными экспортами AIPerf: `results/`.
+- Qwen3-8B на GPU A100 80 GB.
+- При 120 RPM конфигурация с EAGLE-3 дала среднюю задержку **4,89 с** против **6,90 с** у baseline — ускорение **1,41x**.
+- Проверенный максимум нагрузки с выполнением SLA P90 < 15 с: **200 RPM**.
+- При 210 RPM P90 достигла 16,89 с.
+- До 180 RPM EAGLE-3 ускоряет инференс; при 240 RPM он уже проигрывает baseline.
 
-Спекдек впервые стал хуже контроля на проверенной сетке при 240 RPM; при 180 RPM он еще быстрее. Точная точка внутри этого интервала не измерялась. На 960 RPM у EAGLE-3 было 65 таймаутов, поэтому эта точка исключена из сравнительных графиков, но сохранена в таблице.
+## Артефакты
 
-## Условия
-
-- Сервер: edu@45.155.205.98, только физическая GPU 1 (A100 80 GB).
-- Целевая модель: Qwen/Qwen3-8B, без thinking, temperature=0, seed=42, max_tokens=512.
-- vLLM 0.22.0, AIPerf 0.13.0, исходный Dockerfile преподавателя.
-- `data/requests.jsonl`: 640 неизмененных запросов, SHA256 `67c48379e5ae2608f7ca08650fd346facdc01f766a3e8eecea6459d7cec00ebc`.
-- Исходные файлы сохранены в `original/`.
+- Конфигурации сервера: [configs/](configs/)
+- Скрипты запуска: [benchmark.sh](benchmark.sh), [sweep.sh](sweep.sh), [load_test.sh](load_test.sh)
+- Таблицы:
+  - [configurations.csv](tables/configurations.csv) — сравнение конфигураций
+  - [speculation.csv](tables/speculation.csv) — эффект спекулятивного декодирования по нагрузке
+  - [load_test.csv](tables/load_test.csv) — проверка пропускной способности и SLA
+- Графики: [figures/speculation.png](figures/speculation.png), [figures/capacity.png](figures/capacity.png)
+- Отчет: [report.pdf](report.pdf) и [report.md](report.md)
+- Исходные данные и результаты: [data/requests.jsonl](data/requests.jsonl), [results/](results/)
 
 ## Методика
 
-1. Сравнение конфигураций: исходный `benchmark.sh`, 120 RPM, все 640 запросов последовательно. Прогрев: 40 запросов, concurrency=8.
-2. Спекдек: `sweep.sh`, все 640 запросов при каждом RPM. Это сохраняет одинаковый состав запросов при разных нагрузках. Точка 120 RPM берется из первого этапа. Проверка SLA: исходный `load_test.sh`, 300 секунд подачи нагрузки, ожидание завершения отправленных запросов.
-3. Перед каждым тестом и после него скрипт вызывает `/reset_prefix_cache`. Между конфигурациями сервер перезапускается. Прогрев проходит после начальной очистки, как в исходных скриптах.
-4. Измеряются клиентские Mean и P90 E2E Latency. Ускорение = Mean baseline / Mean configuration. SLA: P90 строго меньше 15 секунд.
-5. Контроллер проверяет контрольную сумму данных, параметры всех запросов и отсутствие чужих вычислительных процессов на GPU 1. При обнаружении чужого процесса останавливает только свой контейнер.
+- Модель: `Qwen/Qwen3-8B`, без thinking, `temperature=0`, `seed=42`, `max_tokens=512`.
+- Тесты проводились через AIPerf с тем же набором из 640 запросов.
+- Перед тестами очищался prefix cache.
+- Метрики: средняя и P90 end-to-end latency.
+- Нагрузочный тест длился 300 секунд при постоянном request rate.
 
-`completed_rpm` в полной таблице учитывает ожидание последних ответов после окончания подачи нагрузки, поэтому может быть ниже заданного RPM. `dispatch_span_s` показывает интервал отправки запросов. Для длительного теста он близок к 300 секундам.
-
-При нагрузочном тестировании датасет повторяется по кругу. Кеш очищается между тестами, но работает внутри каждого теста. Это методика исходного `load_test.sh`.
-
-Предупреждения AIPerf `OSL mismatch` ожидаемы: 512 - верхний предел длины, модель может закончить ответ раньше. Повторная токенизация ответа клиентом также может отличаться от счетчика сервера. Для проверки лимита используется `usage_completion_tokens`.
-
-P90 при наличии таймаутов описывает только успешные ответы. Такие точки нельзя считать успешным нагрузочным тестом или использовать для корректного расчета ускорения; они остаются в исходных результатах и таблицах с количеством ошибок.
-
-## Запуск
-
-Контейнер изолирует GPU 1; внутри контейнера она имеет номер 0.
+## Повторный запуск
 
 ```bash
 sudo docker build -t hw6-lena:20261119 .
@@ -41,30 +37,3 @@ sudo docker run -d --name hw6-lena-20261119 --gpus device=1 --ipc=host \
   -v rlvr-hf-cache:/cache -v "$PWD":/homework hw6-lena:20261119 sleep infinity
 sudo python3 run_experiments.py --configs baseline chunk2048 chunk1024 eagle3
 ```
-
-Команды остальных этапов, в порядке запуска:
-
-```bash
-sudo python3 run_experiments.py --configs eagle3 --mode sweep --rpms 240 480 960 180 --reuse-server
-sudo python3 run_experiments.py --configs eagle3 --mode load --rpms 180 200 220 210 --reuse-server
-sudo python3 run_experiments.py --configs chunk2048 --mode sweep --rpms 180 240 480 960
-```
-
-Контроллер не перезаписывает существующие результаты. Для повторного запуска используйте отдельную папку результатов или другое имя конфигурации.
-
-## Повторная сборка таблиц, графиков и отчета
-
-```bash
-python -m pip install -r requirements-analysis.txt
-python summarize.py
-python plot_results.py --best eagle3
-python make_report.py
-```
-
-Для PDF нужен Arial в Windows или DejaVu Sans в Linux. Текст выводов хранится в `report_notes.json`; численные таблицы автоматически собираются из результатов.
-
-## Источники
-
-- vLLM: https://docs.vllm.ai/en/v0.22.0/features/speculative_decoding/
-- Совместимый EAGLE-3 draft для Qwen3-8B без thinking: https://huggingface.co/RedHatAI/Qwen3-8B-speculator.eagle3
-- Определения метрик AIPerf: https://docs.nvidia.com/aiperf/reference/ai-perf-metrics-reference
