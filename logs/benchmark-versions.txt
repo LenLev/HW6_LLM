@@ -1,0 +1,21 @@
+Name: aiperf
+Version: 0.13.0
+Summary: AIPerf is a package for performance testing of AI models
+Home-page: 
+Author: 
+Author-email: "NVIDIA Inc." <sw-dl-dynamo@nvidia.com>
+License: Apache-2.0
+Location: /opt/benchmark/lib/python3.12/site-packages
+Requires: aiofiles, aiohttp, aiosqlite, crick, cyclopts, dash, dash-bootstrap-components, datasets, fastapi, ffmpeg-python, filelock, huggingface-hub, jinja2, jmespath, kaleido, kopf, kubernetes-asyncio, matplotlib, msgspec, numpy, nvidia-ml-py, optuna, orjson, pandas, pillow, plotly, prometheus-client, protobuf, psutil, pyarrow, pydantic, pydantic-settings, python-multipart, pyzmq, rich, ruamel-yaml, scipy, seaborn, sentencepiece, setproctitle, soundfile, starlette-compress, textual, tiktoken, tqdm, transformers, uvicorn, uvloop, zstandard
+Required-by: 
+---
+Name: transformers
+Version: 5.22.1
+Summary: Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training.
+Home-page: https://github.com/huggingface/transformers
+Author: The Hugging Face team (past and future) with the help of all our contributors (https://github.com/huggingface/transformers/graphs/contributors)
+Author-email: transformers@huggingface.co
+License: Apache 2.0 License
+Location: /opt/benchmark/lib/python3.12/site-packages
+Requires: huggingface-hub, numpy, packaging, pyyaml, regex, safetensors, tokenizers, tqdm, typer
+Required-by: aiperf

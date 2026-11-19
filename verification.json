@@ -1,0 +1,15 @@
+{
+  "dataset_sha256": "67c48379e5ae2608f7ca08650fd346facdc01f766a3e8eecea6459d7cec00ebc",
+  "original_files_unchanged": true,
+  "completed_runs": 16,
+  "measurement_requests": 11726,
+  "successful_requests": 11661,
+  "warmup_requests": 640,
+  "errors": 65,
+  "error_run": "sweep-eagle3-960rpm",
+  "successful_prefix_cache_resets": 32,
+  "load_duration_seconds": 300,
+  "pdf_pages": 2,
+  "gpu": "physical GPU 1, A100 80GB",
+  "gpu_released": "1, GPU-473487c4-3598-2b12-8c6d-54d5f4a0c0b6, 1 MiB"
+}

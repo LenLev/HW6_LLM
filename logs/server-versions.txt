@@ -1,0 +1,21 @@
+Name: vllm
+Version: 0.22.0+cu129
+Summary: A high-throughput and memory-efficient inference and serving engine for LLMs
+Home-page: https://github.com/vllm-project/vllm
+Author: vLLM Team
+Author-email: 
+License-Expression: Apache-2.0
+Location: /usr/local/lib/python3.12/dist-packages
+Requires: aiohttp, anthropic, apache-tvm-ffi, blake3, cachetools, cbor2, cloudpickle, compressed-tensors, depyf, diskcache, einops, fastapi, fastsafetensors, filelock, flashinfer-cubin, flashinfer-python, gguf, humming-kernels, ijson, lark, llguidance, lm-format-enforcer, mcp, mistral_common, model-hosting-container-standards, msgspec, ninja, numba, numpy, nvidia-cudnn-frontend, nvidia-cutlass-dsl, openai, openai-harmony, opencv-python-headless, opentelemetry-api, opentelemetry-exporter-otlp, opentelemetry-sdk, opentelemetry-semantic-conventions-ai, outlines_core, partial-json-parser, pillow, prometheus-fastapi-instrumentator, prometheus_client, protobuf, psutil, py-cpuinfo, pybase64, pydantic, python-json-logger, pyyaml, pyzmq, quack-kernels, regex, requests, safetensors, sentencepiece, setproctitle, setuptools, six, tiktoken, tilelang, tokenizers, tokenspeed-mla, torch, torchaudio, torchvision, tqdm, transformers, typing_extensions, watchfiles, xgrammar
+Required-by: 
+---
+Name: torch
+Version: 2.11.0+cu129
+Summary: Tensors and Dynamic neural networks in Python with strong GPU acceleration
+Home-page: https://pytorch.org
+Author: 
+Author-email: PyTorch Team <packages@pytorch.org>
+License: BSD-3-Clause
+Location: /usr/local/lib/python3.12/dist-packages
+Requires: cuda-bindings, cuda-toolkit, filelock, fsspec, jinja2, networkx, nvidia-cudnn-cu12, nvidia-cusparselt-cu12, nvidia-nccl-cu12, nvidia-nvshmem-cu12, setuptools, sympy, triton, typing-extensions
+Required-by: accelerate, bitsandbytes, compressed-tensors, flashinfer-python, humming-kernels, lmcache, nixl-cu12, nixl-cu13, quack-kernels, runai-model-streamer, tilelang, timm, tokenspeed-mla, torch_c_dlpack_ext, torchvision, vllm, xgrammar

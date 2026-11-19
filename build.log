@@ -1,0 +1,30 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  8.431MB
+Step 1/8 : FROM vllm/vllm-openai:v0.22.0-cu129@sha256:14f7be59bea024f60a7cb7076ce5666d7c72751354a3db22cb713af28cffa2cf
+ ---> 14f7be59bea0
+Step 2/8 : RUN python3 -m venv /opt/benchmark     && /opt/benchmark/bin/pip install --no-cache-dir aiperf==0.13.0 transformers==5.22.1
+ ---> Using cache
+ ---> ce75e0181af9
+Step 3/8 : ENV PATH="/opt/benchmark/bin:${PATH}"
+ ---> Using cache
+ ---> 7bf5366d2f2f
+Step 4/8 : WORKDIR /homework
+ ---> Using cache
+ ---> 147dcedb577e
+Step 5/8 : COPY benchmark.sh load_test.sh serve.sh ./
+ ---> 77f43f0528dd
+Step 6/8 : COPY data ./data
+ ---> d39e3e37b2c5
+Step 7/8 : ENTRYPOINT []
+ ---> Running in 9dabbb8185fa
+ ---> Removed intermediate container 9dabbb8185fa
+ ---> 8e29317fd6ee
+Step 8/8 : CMD ["bash"]
+ ---> Running in 4175a9c69f5a
+ ---> Removed intermediate container 4175a9c69f5a
+ ---> a3bd2db8bc3f
+Successfully built a3bd2db8bc3f
+Successfully tagged hw6-lena:20261119
